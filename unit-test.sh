@@ -1,5 +1,4 @@
 #!/bin/bash
-set -Ee
 
 function echo_test_result {
     local TEST_NAME=$1
@@ -16,11 +15,14 @@ function echo_test_result {
     
 function unit_test {
     local TEST_NAME=$1
-    trap "echo_test_result $TEST_NAME false; trap ERR; return 1" ERR
+    trap "echo_test_result $TEST_NAME false; trap EXIT; return 0" EXIT
     $TEST_NAME
-    trap ERR
-    if [ $? -eq "0" ]; then
+    local RES=$?
+    trap EXIT
+    if [ $RES -eq "0" ]; then
         echo_test_result $TEST_NAME true
+    else
+        echo_test_result $TEST_NAME false
     fi
 }
 
@@ -31,7 +33,7 @@ function assert {
     if [ "$VALUE" $COMPARE_OPERATOR "$EXPECT" ]; then
         return 0
     else
-        return 1
+        exit 1
     fi
 }
 
