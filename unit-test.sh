@@ -15,11 +15,11 @@ function echo_test_result {
     
 function unit_test {
     local TEST_NAME=$1
-    trap "echo_test_result $TEST_NAME false; trap EXIT; return 0" EXIT
-    $TEST_NAME
+    trap "echo_test_result $TEST_NAME false; trap EXIT" EXIT
+    ($TEST_NAME)
     local RES=$?
     trap EXIT
-    if [ $RES -eq "0" ]; then
+    if [ "$RES" -eq "0" ]; then
         echo_test_result $TEST_NAME true
     else
         echo_test_result $TEST_NAME false
